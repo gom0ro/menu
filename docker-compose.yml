@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: menu
+      POSTGRES_PASSWORD: menu_secret
+      POSTGRES_DB: restaurant_menu
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://menu:menu_secret@db:5432/restaurant_menu
+      SECRET_KEY: change-me-in-production-use-long-random-string
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

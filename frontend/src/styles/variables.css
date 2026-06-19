@@ -1,0 +1,35 @@
+:root {
+  --color-bg: #ffffff;
+  --color-bg-secondary: #fafafa;
+  --color-text: #111111;
+  --color-text-muted: #666666;
+  --color-border: #e8e8e8;
+  --color-accent: #111111;
+  --color-hover: #f5f5f5;
+  --color-glass: rgba(255, 255, 255, 0.72);
+  --color-glass-border: rgba(255, 255, 255, 0.3);
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2.5rem;
+  --spacing-xl: 4rem;
+  --radius-sm: 2px;
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --header-height: 64px;
+}
+
+[data-theme='dark'] {
+  --color-bg: #0a0a0a;
+  --color-bg-secondary: #141414;
+  --color-text: #f5f5f5;
+  --color-text-muted: #999999;
+  --color-border: #2a2a2a;
+  --color-accent: #ffffff;
+  --color-hover: #1a1a1a;
+  --color-glass: rgba(20, 20, 20, 0.75);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+}
