@@ -618,7 +618,7 @@ onMounted(load)
                     <button type="button" class="img-delete-btn" @click="deleteImage(idx)" title="Удалить фото">&times;</button>
                   </div>
                   <label class="img-upload-box">
-                    <input type="file" accept="image/*" hidden @change="uploadImage($event)" />
+                    <input type="file" accept="image/jpeg, image/png, image/webp, image/jpg" hidden @change="uploadImage($event)" />
                     <span>+ Добавить</span>
                   </label>
                 </div>
@@ -626,7 +626,7 @@ onMounted(load)
 
               <div v-else class="input-group">
                 <label for="dish-image-file">Загрузить фото</label>
-                <input id="dish-image-file" type="file" accept="image/*" @change="onFile" />
+                <input id="dish-image-file" type="file" accept="image/jpeg, image/png, image/webp, image/jpg" @change="onFile" />
               </div>
             </div>
 

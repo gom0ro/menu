@@ -37,6 +37,13 @@ export function buildWhatsAppUrl(phone: string, message: string): string {
 }
 
 export function imageUrl(path: string): string {
+  if (!path) return ''
   if (path.startsWith('http')) return path
-  return path
+  
+  const apiUrl = import.meta.env.VITE_API_URL || ''
+  if (apiUrl) {
+    const baseUrl = apiUrl.replace(/\/api\/?$/, '/')
+    return baseUrl + path
+  }
+  return '/' + path
 }
