@@ -609,12 +609,7 @@ async function onRestaurantChange() {
   text-align: right;
 }
 
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  align-items: center;
-}
+
 
 .btn-action {
   font-size: 12px;

@@ -139,7 +139,7 @@ onMounted(async () => {
   font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
   color: var(--color-text-muted);
 }
-.actions { display: flex; gap: 8px; }
+
 .actions button { font-size: 12px; color: var(--color-text-muted); }
 .actions button.danger { color: #c44; }
 .modal-overlay {
