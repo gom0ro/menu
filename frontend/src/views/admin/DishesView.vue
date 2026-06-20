@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { api } from '@/api/client'
-import { formatPrice } from '@/composables/useOrder'
+import { formatPrice, imageUrl } from '@/composables/useOrder'
 import type { Category, Dish, Restaurant } from '@/types'
 
 const restaurants = ref<Restaurant[]>([])
@@ -198,7 +198,7 @@ async function onRestaurantChange() {
               <td>
                 <div class="dish-photo-cell">
                   <div class="thumb-wrapper">
-                    <img v-if="d.images?.[0]" :src="d.images[0]" class="thumb" />
+                    <img v-if="d.images?.[0]" :src="imageUrl(d.images[0])" class="thumb" />
                     <div v-else class="thumb-placeholder">🍲</div>
                   </div>
                   <label class="upload-label" title="Загрузить новое фото">
@@ -239,7 +239,7 @@ async function onRestaurantChange() {
           <div class="dish-card__main">
             <div class="dish-card__photo-section">
               <div class="thumb-wrapper thumb-wrapper--large">
-                <img v-if="d.images?.[0]" :src="d.images[0]" class="thumb" />
+                <img v-if="d.images?.[0]" :src="imageUrl(d.images[0])" class="thumb" />
                 <div v-else class="thumb-placeholder">🍲</div>
               </div>
               <label class="upload-label upload-label--floating" title="Заменить фото">
@@ -334,7 +334,7 @@ async function onRestaurantChange() {
                 <label>Фотографии блюда</label>
                 <div class="image-previews">
                   <div v-for="(img, idx) in form.images" :key="idx" class="img-preview-box">
-                    <img :src="img" alt="Фото блюда" />
+                    <img :src="imageUrl(img)" alt="Фото блюда" />
                     <button type="button" class="img-delete-btn" @click="deleteImage(idx)" title="Удалить фото">&times;</button>
                   </div>
                   <label class="img-upload-box">

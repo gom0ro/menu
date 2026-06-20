@@ -168,3 +168,140 @@ input:focus, textarea:focus, select:focus {
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
+.table-wrap {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th, .table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table th {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: var(--color-bg-secondary);
+  font-weight: 500;
+}
+
+.table tr:last-child td { border-bottom: none; }
+.table tbody tr { transition: background var(--transition-fast); }
+.table tbody tr:hover { background: var(--color-hover); }
+
+.text-right { text-align: right; }
+
+/* ── Dish photo cell ─────────────────────────────────────── */
+.dish-photo-cell {
+  position: relative;
+  display: inline-block;
+}
+
+.thumb-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.thumb-wrapper--large { width: 72px; height: 72px; }
+
+.thumb { width: 100%; height: 100%; object-fit: cover; }
+.thumb-placeholder { font-size: 18px; }
+
+.upload-label {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  font-size: 10px;
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.12);
+  transition: all var(--transition-fast);
+}
+.upload-label:hover { background: var(--color-hover); border-color: var(--color-text); }
+.upload-label--floating { bottom: -4px; right: -4px; width: 26px; height: 26px; font-size: 12px; }
+
+/* ── Badges ──────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  background: var(--color-hover);
+  color: var(--color-text-muted);
+}
+.badge--active  { background: rgba(46,196,182,.12); color: #0f9f90; }
+.badge--inactive { background: rgba(217,4,41,.07); color: #d90429; }
+
+.tag-label {
+  font-size: 10px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: var(--color-text-muted);
+}
+
+.status-badge {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  background: var(--color-hover);
+  color: var(--color-text-muted);
+  border-radius: 4px;
+}
+.status-badge--active { background: rgba(46,196,182,.12); color: #0f9f90; }
+
+/* ── Muted text ──────────────────────────────────────────── */
+.muted { font-size: 11px; color: var(--color-text-muted); margin-top: 2px; }
+
+/* ── Table action buttons ────────────────────────────────── */
+.actions { text-align: right; white-space: nowrap; }
+.actions .btn-action { margin-left: 12px; }
+
+.btn-action { font-size: 12px; color: var(--color-text-muted); transition: color var(--transition-fast); }
+.btn-action:hover { color: var(--color-text); }
+.btn-action--danger { color: #d90429; }
+.btn-action--danger:hover { color: #ef233c; }
+
+/* ── Empty state ─────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+  background: var(--color-bg);
+  border: 1px dashed var(--color-border);
+  border-radius: 6px;
+}
+.page-not-found { margin: var(--spacing-xl) auto; max-width: 500px; }
+.empty-state__icon { font-size: 3rem; margin-bottom: var(--spacing-md); }
+.empty-state h3 { font-size: 1.5rem; margin-bottom: 8px; }
+.empty-state p { color: var(--color-text-muted); max-width: 400px; margin: 0 auto var(--spacing-md); font-size: 13px; }
+
