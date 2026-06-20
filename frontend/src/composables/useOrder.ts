@@ -40,13 +40,13 @@ export function imageUrl(path: string): string {
   if (!path) return ''
   if (path.startsWith('http')) return path
   
-  const apiUrl = import.meta.env.VITE_API_URL || ''
+  let apiUrl = import.meta.env.VITE_API_URL || ''
+  apiUrl = apiUrl.trim()
   if (apiUrl) {
     try {
-      const base = apiUrl.replace(/\/api\/?$/, '/')
-      // If path starts with /, remove it so URL constructor doesn't get confused
-      const cleanPath = path.startsWith('/') ? path.substring(1) : path
-      return new URL(cleanPath, base).toString()
+      const url = new URL(apiUrl)
+      const cleanPath = path.startsWith('/') ? path : '/' + path
+      return url.origin + cleanPath
     } catch {
       return path
     }
