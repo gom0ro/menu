@@ -42,8 +42,14 @@ export function imageUrl(path: string): string {
   
   const apiUrl = import.meta.env.VITE_API_URL || ''
   if (apiUrl) {
-    const baseUrl = apiUrl.replace(/\/api\/?$/, '/')
-    return baseUrl + path
+    try {
+      const base = apiUrl.replace(/\/api\/?$/, '/')
+      // If path starts with /, remove it so URL constructor doesn't get confused
+      const cleanPath = path.startsWith('/') ? path.substring(1) : path
+      return new URL(cleanPath, base).toString()
+    } catch {
+      return path
+    }
   }
-  return '/' + path
+  return path
 }
