@@ -1,12 +1,19 @@
 import json
 import os
 import uuid
+import io
 from pathlib import Path
 
 from fastapi import Depends, HTTPException, UploadFile, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from PIL import Image
+import pillow_heif
+
+# Register HEIF opener so Pillow can open .heic files directly
+pillow_heif.register_heif_opener()
 
 from app.auth import decode_token, get_user_by_email
 from app.config import settings
@@ -66,13 +73,24 @@ async def save_upload(file: UploadFile) -> str:
     if len(content) > settings.max_upload_size:
         raise HTTPException(status_code=400, detail="File too large")
 
-    ext = Path(file.filename or "image.jpg").suffix.lower()
-    if ext not in {".jpg", ".jpeg", ".png", ".webp", ".gif"}:
-        ext = ".jpg"
-
-    filename = f"{uuid.uuid4().hex}{ext}"
+    filename = f"{uuid.uuid4().hex}.jpg"
     filepath = upload_dir / filename
-    with open(filepath, "wb") as f:
-        f.write(content)
+
+    try:
+        image = Image.open(io.BytesIO(content))
+        
+        # Ensure image is in RGB format for JPEG saving
+        if image.mode in ("RGBA", "P"):
+            image = image.convert("RGB")
+            
+        # Resize image to save bandwidth and storage
+        image.thumbnail((1200, 1200))
+        
+        image.save(filepath, "JPEG", quality=85)
+    except Exception as e:
+        print(f"Image processing error: {e}")
+        # Fallback to saving raw bytes
+        with open(filepath, "wb") as f:
+            f.write(content)
 
     return f"/uploads/{filename}"

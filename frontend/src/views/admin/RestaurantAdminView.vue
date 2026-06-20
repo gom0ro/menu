@@ -408,7 +408,7 @@ onMounted(load)
                     <div v-else class="thumb-placeholder">🍲</div>
                   </div>
                   <label class="upload-label upload-label--floating">
-                    <input type="file" accept="image/*" hidden @change="uploadForDish(d.id, $event)" />
+                    <input type="file" accept="image/jpeg, image/png, image/webp, image/jpg" hidden @change="uploadForDish(d.id, $event)" />
                     📷
                   </label>
                 </div>
