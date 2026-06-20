@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { formatPrice } from '@/composables/useOrder'
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
@@ -8,6 +9,7 @@ const emit = defineEmits<{ checkout: []; close: [] }>()
 
 const cart = useCartStore()
 const { items, totalPrice, isOpen } = storeToRefs(cart)
+const { t } = useI18n()
 </script>
 
 <template>
@@ -18,36 +20,38 @@ const { items, totalPrice, isOpen } = storeToRefs(cart)
     <transition name="slide-right">
       <aside v-if="isOpen" class="cart" role="dialog" aria-label="Корзина">
         <div class="cart__header">
-          <h2 class="cart__title">Корзина</h2>
+          <h2 class="cart__title">{{ t('cart') }}</h2>
           <button class="cart__close" aria-label="Закрыть" @click="emit('close')">✕</button>
         </div>
 
         <div v-if="items.length === 0" class="cart__empty">
-          <p>Корзина пуста</p>
-          <span>Выберите блюда из меню</span>
+          <p>{{ t('emptyCart') }}</p>
         </div>
 
         <ul v-else class="cart__list">
-          <li v-for="item in items" :key="item.dish.id" class="cart__item">
+          <li v-for="item in items" :key="item.cartItemId" class="cart__item">
             <div class="cart__item-info">
               <span class="cart__item-name">{{ item.dish.name }}</span>
-              <span class="cart__item-price">{{ formatPrice(item.dish.price * item.quantity, currency) }}</span>
+              <ul v-if="item.modifiers?.length" class="cart__item-modifiers">
+                <li v-for="m in item.modifiers" :key="m.id">+ {{ m.name }}</li>
+              </ul>
+              <span class="cart__item-price">{{ formatPrice(item.price * item.quantity, currency) }}</span>
             </div>
             <div class="cart__qty">
-              <button @click="cart.setQuantity(item.dish.id, item.quantity - 1)">−</button>
+              <button @click="cart.setQuantity(item.cartItemId, item.quantity - 1)">−</button>
               <span>{{ item.quantity }}</span>
-              <button @click="cart.setQuantity(item.dish.id, item.quantity + 1)">+</button>
+              <button @click="cart.setQuantity(item.cartItemId, item.quantity + 1)">+</button>
             </div>
           </li>
         </ul>
 
         <div v-if="items.length > 0" class="cart__footer">
           <div class="cart__total">
-            <span>Итого</span>
+            <span>{{ t('total') }}</span>
             <span>{{ formatPrice(totalPrice, currency) }}</span>
           </div>
           <button class="cart__checkout" @click="emit('checkout')">
-            Оформить заказ
+            {{ t('checkout') }}
           </button>
         </div>
       </aside>

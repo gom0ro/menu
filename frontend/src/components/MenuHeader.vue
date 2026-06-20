@@ -1,5 +1,8 @@
 <script setup lang="ts">
-defineProps<{
+import { useI18n } from 'vue-i18n'
+import { watch } from 'vue'
+
+const props = defineProps<{
   restaurantName: string
   description?: string | null
   cartCount: number
@@ -10,6 +13,12 @@ defineEmits<{
   openCart: []
   toggleTheme: []
 }>()
+
+const { t, locale } = useI18n()
+
+watch(locale, (newLocale) => {
+  localStorage.setItem('user-locale', newLocale as string)
+})
 </script>
 
 <template>
@@ -20,6 +29,12 @@ defineEmits<{
         <p v-if="description" class="header__desc">{{ description }}</p>
       </div>
       <div class="header__actions">
+        <select v-model="locale" class="header__lang-select">
+          <option value="ru">RU</option>
+          <option value="en">EN</option>
+          <option value="kk">KK</option>
+        </select>
+        
         <button class="header__icon-btn" aria-label="Тема" @click="$emit('toggleTheme')">
           <svg v-if="isDark" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
@@ -29,7 +44,7 @@ defineEmits<{
           </svg>
         </button>
         <button class="header__cart-btn" @click="$emit('openCart')">
-          <span>Корзина</span>
+          <span>{{ t('cart') }}</span>
           <transition name="fade">
             <span v-if="cartCount > 0" class="header__badge">{{ cartCount }}</span>
           </transition>
@@ -100,6 +115,8 @@ defineEmits<{
   position: relative;
   padding: 10px 24px;
   border: 1px solid var(--color-text);
+  background: transparent;
+  color: var(--color-text);
   font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;

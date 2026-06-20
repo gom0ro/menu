@@ -11,12 +11,34 @@ const email = ref('admin@menu.local')
 const password = ref('admin123')
 const error = ref('')
 
+const SUPERADMIN_EMAIL = 'admin@menu.local'
+
 async function submit() {
   error.value = ''
   try {
     await auth.login(email.value, password.value)
-    const redirect = (route.query.redirect as string) || '/admin/dashboard'
-    router.push(redirect)
+
+    // Superadmin goes to the global dashboard
+    if (auth.user?.email === SUPERADMIN_EMAIL) {
+      const redirect = (route.query.redirect as string) || '/admin/dashboard'
+      router.push(redirect)
+      return
+    }
+
+    // Manager: find their restaurant and redirect to its panel
+    try {
+      const { api } = await import('@/api/client')
+      const restaurants = await api.getRestaurants()
+      if (restaurants.length > 0) {
+        router.push(`/menu/${restaurants[0].slug}/admin`)
+        return
+      }
+    } catch {
+      // fallback
+    }
+
+    // Fallback for manager with no restaurant yet
+    router.push('/admin/dashboard')
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Ошибка входа'
   }

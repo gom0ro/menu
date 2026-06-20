@@ -36,9 +36,15 @@ async def get_restaurant_for_owner(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> Restaurant:
-    result = await db.execute(
-        select(Restaurant).where(Restaurant.id == restaurant_id, Restaurant.owner_id == user.id)
-    )
+    # Superadmin can access any restaurant
+    if user.email == "admin@menu.local":
+        result = await db.execute(
+            select(Restaurant).where(Restaurant.id == restaurant_id)
+        )
+    else:
+        result = await db.execute(
+            select(Restaurant).where(Restaurant.id == restaurant_id, Restaurant.owner_id == user.id)
+        )
     restaurant = result.scalar_one_or_none()
     if not restaurant:
         raise HTTPException(status_code=404, detail="Restaurant not found")

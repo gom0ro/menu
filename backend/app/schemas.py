@@ -37,7 +37,8 @@ class RestaurantBase(BaseModel):
 
 
 class RestaurantCreate(RestaurantBase):
-    pass
+    manager_email: str
+    manager_password: str = Field(min_length=6)
 
 
 class RestaurantUpdate(BaseModel):
@@ -98,6 +99,41 @@ class CategoryOut(CategoryBase):
     model_config = {"from_attributes": True}
 
 
+# Modifiers
+class ModifierOptionBase(BaseModel):
+    name: str
+    price_delta: int = 0
+
+
+class ModifierOptionCreate(ModifierOptionBase):
+    pass
+
+
+class ModifierOptionOut(ModifierOptionBase):
+    id: int
+    group_id: int
+
+    model_config = {"from_attributes": True}
+
+
+class ModifierGroupBase(BaseModel):
+    name: str
+    is_required: bool = False
+    max_choices: int = 1
+
+
+class ModifierGroupCreate(ModifierGroupBase):
+    options: list[ModifierOptionCreate] = []
+
+
+class ModifierGroupOut(ModifierGroupBase):
+    id: int
+    dish_id: int
+    options: list[ModifierOptionOut] = []
+
+    model_config = {"from_attributes": True}
+
+
 # Dish
 class DishBase(BaseModel):
     name: str
@@ -129,12 +165,19 @@ class DishOut(DishBase):
     restaurant_id: int
     images: list[str]
     order_count: int
+    modifier_groups: list[ModifierGroupOut] = []
 
     model_config = {"from_attributes": True}
 
     @classmethod
     def from_orm_dish(cls, dish) -> "DishOut":
         images = json.loads(dish.images) if dish.images else []
+        mod_groups = []
+        try:
+            mod_groups = dish.modifier_groups
+        except Exception:
+            pass
+
         return cls(
             id=dish.id,
             restaurant_id=dish.restaurant_id,
@@ -147,6 +190,7 @@ class DishOut(DishBase):
             is_hidden=dish.is_hidden,
             sort_order=dish.sort_order,
             order_count=dish.order_count,
+            modifier_groups=mod_groups
         )
 
 
@@ -160,6 +204,7 @@ class DishPublic(BaseModel):
     category_id: int
     category_slug: str
     category_name: str
+    modifier_groups: list[ModifierGroupOut] = []
 
 
 # Analytics

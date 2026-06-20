@@ -50,6 +50,76 @@ img {
 input, textarea, select {
   font-family: inherit;
   font-size: inherit;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--color-text);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn--primary {
+  background: var(--color-text);
+  color: var(--color-bg);
+  border: 1px solid var(--color-text);
+}
+
+.btn--primary:hover {
+  background: transparent;
+  color: var(--color-text);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.btn--secondary:hover {
+  background: var(--color-hover);
+  border-color: var(--color-text);
+}
+
+.btn-action {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-action:hover {
+  color: var(--color-text);
+}
+
+.btn-action--danger {
+  color: #d90429;
+}
+
+.btn-action--danger:hover {
+  color: #ef233c;
 }
 
 .page-enter-active,

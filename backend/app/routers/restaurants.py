@@ -7,7 +7,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth import generate_short_code, generate_slug
+from app.auth import generate_short_code, generate_slug, hash_password
 from app.database import get_db
 from app.deps import get_current_user, get_restaurant_for_owner
 from app.models import AnalyticsEvent, Category, Dish, EventType, Restaurant, User
@@ -32,7 +32,11 @@ async def list_restaurants(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(Restaurant).where(Restaurant.owner_id == user.id).order_by(Restaurant.id))
+    # Superadmin can see all restaurants; managers see only their own
+    if user.email == "admin@menu.local":
+        result = await db.execute(select(Restaurant).order_by(Restaurant.id))
+    else:
+        result = await db.execute(select(Restaurant).where(Restaurant.owner_id == user.id).order_by(Restaurant.id))
     return result.scalars().all()
 
 
@@ -42,6 +46,21 @@ async def create_restaurant(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    # Only superadmin (admin@menu.local) can create restaurants
+    if user.email != "admin@menu.local":
+        raise HTTPException(status_code=403, detail="Only superadmin can create restaurants")
+
+    # Check if manager email already registered
+    existing_user = await db.execute(select(User).where(User.email == data.manager_email))
+    manager_user = existing_user.scalar_one_or_none()
+    if manager_user:
+        raise HTTPException(status_code=400, detail="Manager email already registered")
+
+    # Create new user for the manager
+    manager_user = User(email=data.manager_email, hashed_password=hash_password(data.manager_password))
+    db.add(manager_user)
+    await db.flush() # Flush to get manager_user.id
+
     slug = generate_slug(data.name)
     base_slug = slug
     counter = 1
@@ -60,7 +79,7 @@ async def create_restaurant(
         short_code = generate_short_code()
 
     restaurant = Restaurant(
-        owner_id=user.id,
+        owner_id=manager_user.id,
         name=data.name,
         slug=slug,
         short_code=short_code,
@@ -88,6 +107,33 @@ async def create_restaurant(
 
     await db.commit()
     return restaurant
+
+
+@router.get("/restaurants/managers", response_model=list[dict])
+async def list_restaurant_managers(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Returns all restaurants with their manager emails. Superadmin only."""
+    if user.email != "admin@menu.local":
+        raise HTTPException(status_code=403, detail="Superadmin only")
+
+    result = await db.execute(
+        select(Restaurant, User)
+        .join(User, Restaurant.owner_id == User.id)
+        .order_by(Restaurant.id)
+    )
+    rows = result.all()
+    return [
+        {
+            "restaurant_id": r.id,
+            "restaurant_name": r.name,
+            "restaurant_slug": r.slug,
+            "manager_email": u.email,
+            "is_active": r.is_active,
+        }
+        for r, u in rows
+    ]
 
 
 @router.get("/restaurants/{restaurant_id}", response_model=RestaurantOut)

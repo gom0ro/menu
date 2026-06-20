@@ -54,7 +54,7 @@ defineEmits<{ select: [slug: string] }>()
   white-space: nowrap;
 }
 
-.filters__item:hover {
+.filters__item:not(.filters__item--active):hover {
   border-color: var(--color-text);
   color: var(--color-text);
 }

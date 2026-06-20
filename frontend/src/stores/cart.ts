@@ -7,26 +7,38 @@ export const useCartStore = defineStore('cart', () => {
   const isOpen = ref(false)
 
   const totalItems = computed(() => items.value.reduce((sum, i) => sum + i.quantity, 0))
-  const totalPrice = computed(() => items.value.reduce((sum, i) => sum + i.dish.price * i.quantity, 0))
+  const totalPrice = computed(() => items.value.reduce((sum, i) => sum + i.price * i.quantity, 0))
+
+  function generateId(dishId: number, modifiers?: { id: number }[]): string {
+    if (!modifiers || modifiers.length === 0) return dishId.toString()
+    const sorted = [...modifiers].sort((a, b) => a.id - b.id)
+    return `${dishId}_${sorted.map(m => m.id).join('-')}`
+  }
 
   function add(dish: Dish) {
-    const existing = items.value.find((i) => i.dish.id === dish.id)
+    addItemWithModifiers(dish, [], dish.price)
+  }
+
+  function addItemWithModifiers(dish: Dish, modifiers: { id: number; name: string; price_delta: number; group_name: string }[], price: number) {
+    const cartItemId = generateId(dish.id, modifiers)
+    const existing = items.value.find((i) => i.cartItemId === cartItemId)
+    
     if (existing) {
       existing.quantity++
     } else {
-      items.value.push({ dish, quantity: 1 })
+      items.value.push({ cartItemId, dish, quantity: 1, price, modifiers })
     }
   }
 
-  function remove(dishId: number) {
-    const idx = items.value.findIndex((i) => i.dish.id === dishId)
+  function remove(cartItemId: string) {
+    const idx = items.value.findIndex((i) => i.cartItemId === cartItemId)
     if (idx !== -1) items.value.splice(idx, 1)
   }
 
-  function setQuantity(dishId: number, qty: number) {
-    const item = items.value.find((i) => i.dish.id === dishId)
+  function setQuantity(cartItemId: string, qty: number) {
+    const item = items.value.find((i) => i.cartItemId === cartItemId)
     if (!item) return
-    if (qty <= 0) remove(dishId)
+    if (qty <= 0) remove(cartItemId)
     else item.quantity = qty
   }
 
@@ -38,5 +50,5 @@ export const useCartStore = defineStore('cart', () => {
   function close() { isOpen.value = false }
   function toggle() { isOpen.value = !isOpen.value }
 
-  return { items, isOpen, totalItems, totalPrice, add, remove, setQuantity, clear, open, close, toggle }
+  return { items, isOpen, totalItems, totalPrice, add, addItemWithModifiers, remove, setQuantity, clear, open, close, toggle }
 })

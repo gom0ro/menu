@@ -20,6 +20,22 @@ export interface Category {
   restaurant_id?: number
 }
 
+export interface ModifierOption {
+  id: number
+  group_id: number
+  name: string
+  price_delta: number
+}
+
+export interface ModifierGroup {
+  id: number
+  dish_id: number
+  name: string
+  is_required: boolean
+  max_choices: number
+  options: ModifierOption[]
+}
+
 export interface Dish {
   id: number
   name: string
@@ -34,6 +50,7 @@ export interface Dish {
   sort_order?: number
   order_count?: number
   restaurant_id?: number
+  modifier_groups?: ModifierGroup[]
 }
 
 export interface MenuData {
@@ -43,8 +60,11 @@ export interface MenuData {
 }
 
 export interface CartItem {
+  cartItemId: string
   dish: Dish
   quantity: number
+  price: number
+  modifiers?: { id: number; name: string; price_delta: number; group_name: string }[]
 }
 
 export interface Stats {

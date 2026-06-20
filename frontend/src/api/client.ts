@@ -52,7 +52,7 @@ export const api = {
 
   getRestaurants: () => request<import('@/types').Restaurant[]>('/restaurants'),
 
-  createRestaurant: (data: Partial<import('@/types').Restaurant>) =>
+  createRestaurant: (data: Record<string, unknown>) =>
     request<import('@/types').Restaurant>('/restaurants', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -71,6 +71,15 @@ export const api = {
 
   getQrUrl: (id: number, baseUrl: string) =>
     `${API_BASE}/restaurants/${id}/qr?base_url=${encodeURIComponent(baseUrl)}`,
+
+  getRestaurantManagers: () =>
+    request<Array<{
+      restaurant_id: number
+      restaurant_name: string
+      restaurant_slug: string
+      manager_email: string
+      is_active: boolean
+    }>>('/restaurants/managers'),
 
   getCategories: (restaurantId: number) =>
     request<import('@/types').Category[]>(`/restaurants/${restaurantId}/categories`),
@@ -117,4 +126,20 @@ export const api = {
       headers: {},
     })
   },
+
+  deleteDishImage: (restaurantId: number, dishId: number, index: number) =>
+    request<import('@/types').Dish>(`/restaurants/${restaurantId}/dishes/${dishId}/images/${index}`, {
+      method: 'DELETE',
+    }),
+
+  createModifierGroup: (restaurantId: number, dishId: number, data: Record<string, unknown>) =>
+    request<import('@/types').ModifierGroup>(`/restaurants/${restaurantId}/dishes/${dishId}/modifiers`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  deleteModifierGroup: (restaurantId: number, dishId: number, groupId: number) =>
+    request(`/restaurants/${restaurantId}/dishes/${dishId}/modifiers/${groupId}`, {
+      method: 'DELETE',
+    }),
 }

@@ -81,8 +81,31 @@ class Dish(Base):
 
     restaurant: Mapped["Restaurant"] = relationship(back_populates="dishes")
     category: Mapped["Category"] = relationship(back_populates="dishes")
+    modifier_groups: Mapped[list["ModifierGroup"]] = relationship(back_populates="dish", cascade="all, delete-orphan", order_by="ModifierGroup.id")
 
 
+class ModifierGroup(Base):
+    __tablename__ = "modifier_groups"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    dish_id: Mapped[int] = mapped_column(ForeignKey("dishes.id"))
+    name: Mapped[str] = mapped_column(String(100))
+    is_required: Mapped[bool] = mapped_column(Boolean, default=False)
+    max_choices: Mapped[int] = mapped_column(Integer, default=1)
+
+    dish: Mapped["Dish"] = relationship(back_populates="modifier_groups")
+    options: Mapped[list["ModifierOption"]] = relationship(back_populates="group", cascade="all, delete-orphan", order_by="ModifierOption.id")
+
+
+class ModifierOption(Base):
+    __tablename__ = "modifier_options"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("modifier_groups.id"))
+    name: Mapped[str] = mapped_column(String(100))
+    price_delta: Mapped[int] = mapped_column(Integer, default=0)
+
+    group: Mapped["ModifierGroup"] = relationship(back_populates="options")
 class AnalyticsEvent(Base):
     __tablename__ = "analytics_events"
 

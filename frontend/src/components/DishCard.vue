@@ -1,24 +1,27 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { formatPrice, imageUrl } from '@/composables/useOrder'
 import type { Dish } from '@/types'
 
 defineProps<{ dish: Dish; currency: string }>()
 defineEmits<{ add: [dish: Dish] }>()
+
+const { t } = useI18n()
 </script>
 
 <template>
   <article class="card">
-    <div class="card__image-wrap">
+    <div class="card__image-wrap" @click="$emit('add', dish)">
       <img
         :src="imageUrl(dish.images[0] || '')"
         :alt="dish.name"
         class="card__image"
         loading="lazy"
       />
-      <span v-if="dish.is_hit" class="card__badge">Хит</span>
+      <span v-if="dish.is_hit" class="card__badge">{{ t('hit') }}</span>
       <div class="card__overlay">
-        <button class="card__add-btn" @click="$emit('add', dish)">
-          Добавить
+        <button class="card__add-btn">
+          {{ dish.modifier_groups?.length ? t('chooseOptions') : t('add') }}
         </button>
       </div>
     </div>

@@ -9,6 +9,7 @@ import DishCard from '@/components/DishCard.vue'
 import DishSkeleton from '@/components/DishSkeleton.vue'
 import CartSidebar from '@/components/CartSidebar.vue'
 import OrderModal from '@/components/OrderModal.vue'
+import PublicDishDetailModal from '@/components/PublicDishDetailModal.vue'
 import { useMenuStore } from '@/stores/menu'
 import { useCartStore } from '@/stores/cart'
 import { useThemeStore } from '@/stores/theme'
@@ -26,6 +27,8 @@ const { isDark } = storeToRefs(theme)
 const search = ref('')
 const activeCategory = ref('all')
 const orderOpen = ref(false)
+const showDishModal = ref(false)
+const selectedDishForModal = ref<Dish | null>(null)
 
 const slug = computed(() => route.params.slug as string)
 
@@ -67,8 +70,13 @@ const groupedDishes = computed(() => {
 })
 
 function onAdd(dish: Dish) {
-  cart.add(dish)
-  cart.open()
+  if (dish.modifier_groups && dish.modifier_groups.length > 0) {
+    selectedDishForModal.value = dish
+    showDishModal.value = true
+  } else {
+    cart.add(dish)
+    cart.open()
+  }
 }
 
 function onCheckout() {
@@ -155,6 +163,12 @@ watch(slug, (s) => menuStore.fetchMenu(s))
         :whatsapp="data.restaurant.whatsapp_phone"
         @close="orderOpen = false"
         @success="cart.clear()"
+      />
+
+      <PublicDishDetailModal
+        :open="showDishModal"
+        :dish="selectedDishForModal"
+        @close="showDishModal = false"
       />
     </template>
   </div>
