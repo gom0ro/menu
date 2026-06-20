@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { api } from '@/api/client'
-import type { Dish, ModifierGroup } from '@/types'
+import type { Dish } from '@/types'
 
 const props = defineProps<{
   restaurantId: number

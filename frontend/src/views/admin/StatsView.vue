@@ -172,7 +172,7 @@ onMounted(load)
 
       <!-- Mobile Cards -->
       <div class="mobile-only creds-cards">
-        <div v-for="(m, idx) in managers" :key="m.restaurant_id" class="cred-card">
+        <div v-for="m in managers" :key="m.restaurant_id" class="cred-card">
           <div class="cred-card__header">
             <div class="cred-card__left">
               <div class="status-dot" :class="{ 'status-dot--active': m.is_active }"></div>
