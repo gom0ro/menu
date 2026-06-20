@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '@/api/client'
 import { useAuthStore } from '@/stores/auth'
-import { formatPrice } from '@/composables/useOrder'
+import { formatPrice, imageUrl } from '@/composables/useOrder'
 import type { Category, Dish, Restaurant } from '@/types'
 import ModifierEditorModal from '@/components/ModifierEditorModal.vue'
 
@@ -362,7 +362,7 @@ onMounted(load)
                   <td>
                     <div class="dish-photo-cell">
                       <div class="thumb-wrapper">
-                        <img v-if="d.images?.[0]" :src="d.images[0]" class="thumb" />
+                        <img v-if="d.images?.[0]" :src="imageUrl(d.images[0])" class="thumb" />
                         <div v-else class="thumb-placeholder">🍲</div>
                       </div>
                       <label class="upload-label">
@@ -404,7 +404,7 @@ onMounted(load)
               <div class="dish-card__main">
                 <div class="dish-card__photo-section">
                   <div class="thumb-wrapper thumb-wrapper--large">
-                    <img v-if="d.images?.[0]" :src="d.images[0]" class="thumb" />
+                    <img v-if="d.images?.[0]" :src="imageUrl(d.images[0])" class="thumb" />
                     <div v-else class="thumb-placeholder">🍲</div>
                   </div>
                   <label class="upload-label upload-label--floating">
@@ -614,7 +614,7 @@ onMounted(load)
                 <label>Фотографии блюда</label>
                 <div class="image-previews">
                   <div v-for="(img, idx) in dishForm.images" :key="idx" class="img-preview-box">
-                    <img :src="img" alt="Фото блюда" />
+                    <img :src="imageUrl(img)" alt="Фото блюда" />
                     <button type="button" class="img-delete-btn" @click="deleteImage(idx)" title="Удалить фото">&times;</button>
                   </div>
                   <label class="img-upload-box">
