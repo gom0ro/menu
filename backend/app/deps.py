@@ -11,6 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from PIL import Image
 import pillow_heif
+import cloudinary
+import cloudinary.uploader
+import asyncio
 
 # Register HEIF opener so Pillow can open .heic files directly
 pillow_heif.register_heif_opener()
@@ -21,6 +24,14 @@ from app.database import get_db
 from app.models import Restaurant, User
 
 security = HTTPBearer(auto_error=False)
+
+if settings.cloudinary_cloud_name and settings.cloudinary_api_key and settings.cloudinary_api_secret:
+    cloudinary.config(
+        cloud_name=settings.cloudinary_cloud_name,
+        api_key=settings.cloudinary_api_key,
+        api_secret=settings.cloudinary_api_secret,
+        secure=True,
+    )
 
 
 async def get_current_user(
@@ -66,15 +77,9 @@ def parse_images(images_str: str) -> list[str]:
 
 
 async def save_upload(file: UploadFile) -> str:
-    upload_dir = Path(settings.upload_dir)
-    upload_dir.mkdir(parents=True, exist_ok=True)
-
     content = await file.read()
     if len(content) > settings.max_upload_size:
         raise HTTPException(status_code=400, detail="File too large")
-
-    filename = f"{uuid.uuid4().hex}.jpg"
-    filepath = upload_dir / filename
 
     try:
         image = Image.open(io.BytesIO(content))
@@ -86,11 +91,29 @@ async def save_upload(file: UploadFile) -> str:
         # Resize image to save bandwidth and storage
         image.thumbnail((1200, 1200))
         
-        image.save(filepath, "JPEG", quality=85)
+        buf = io.BytesIO()
+        image.save(buf, "JPEG", quality=85)
+        upload_content = buf.getvalue()
+        
+        if settings.cloudinary_cloud_name:
+            loop = asyncio.get_event_loop()
+            response = await loop.run_in_executor(
+                None,
+                lambda: cloudinary.uploader.upload(upload_content, folder="menu", resource_type="image")
+            )
+            return response['secure_url']
+            
     except Exception as e:
-        print(f"Image processing error: {e}")
-        # Fallback to saving raw bytes
-        with open(filepath, "wb") as f:
-            f.write(content)
+        print(f"Image processing/upload error: {e}")
+        
+    # Fallback to local disk if Cloudinary fails or is not configured
+    upload_dir = Path(settings.upload_dir)
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    filename = f"{uuid.uuid4().hex}.jpg"
+    filepath = upload_dir / filename
+    
+    with open(filepath, "wb") as f:
+        # Just save the raw bytes if processing failed
+        f.write(content)
 
     return f"/uploads/{filename}"
